@@ -2,8 +2,8 @@
   <div ref="parent" class="gamemap">
 <!--ref关联-->
 <!--    canvas画布，绘制2D图形-->
-    <canvas ref="canvas">
-        dfghsbgfd
+    <canvas ref="canvas" tabindex="0">
+
     </canvas>
   </div>
 
