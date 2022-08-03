@@ -1,4 +1,4 @@
-package com.kob.backend.service.impl.user;
+package com.kob.backend.service.impl.user.account;
 
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
