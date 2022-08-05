@@ -1,5 +1,8 @@
 package com.kob.backend.controller.pk;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,8 +17,10 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping("/pk/")
+@Api
 public class BotInfoController {
-    @RequestMapping("getBotInfo/")
+    @ApiOperation(value = "获取Bot信息")
+    @GetMapping("getBotInfo/")
     public Map<String, String> getBotInfo(){
         Map<String, String> bot1 = new HashMap<>();
         bot1.put("name", "tiger");

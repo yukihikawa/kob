@@ -46,10 +46,14 @@ public class RemoveServiceImpl implements RemoveService {
         }
 
         if(!bot.getUserId().equals(user.getId())){
+
             map.put("error_message", "没有权限删除该Bot");
+            return map;
         }
 
         botMapper.deleteById(bot_id);
+        map.put("bid", "" + bot.getUserId());
+        map.put("uid", "" + user.getId());
         map.put("error_message", "success");
         return map;
 

@@ -20,6 +20,7 @@
 		<mysql-connector.version>8.0.29</mysql-connector.version>
 		<mybatis-plus.version>3.5.2</mybatis-plus.version>
 		<jjwt-api.version>0.11.5</jjwt-api.version>
+		<swagger.version>2.9.2</swagger.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -94,6 +95,20 @@
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-generator</artifactId>
 			<version>${mybatis-plus.version}</version>
+		</dependency>
+
+		<!--swagger-->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${swagger.version}</version>
+			<scope>provided </scope>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${swagger.version}</version>
+			<scope>provided </scope>
 		</dependency>
 
 
