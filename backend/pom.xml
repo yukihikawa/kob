@@ -21,6 +21,7 @@
 		<mybatis-plus.version>3.5.2</mybatis-plus.version>
 		<jjwt-api.version>0.11.5</jjwt-api.version>
 		<swagger.version>2.9.2</swagger.version>
+		<fastjson.version>2.0.11</fastjson.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,6 +37,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
 
 		<!--认证-->
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
@@ -109,6 +116,13 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${swagger.version}</version>
 			<scope>provided </scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
 		</dependency>
 
 

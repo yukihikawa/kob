@@ -3,11 +3,12 @@ import {Wall} from "@/assets/scripts/Wall";
 import {Snake} from "@/assets/scripts/Snake";
 
 export class GameMap extends AcGameObject{
-    constructor(ctx, parent) {
+    constructor(ctx, parent, store) {
         super();
 
         this.ctx = ctx;
         this.parent = parent;
+        this.store = store;
         this.L = 0;
 
         //行数和列数
@@ -26,8 +27,9 @@ export class GameMap extends AcGameObject{
 
     }
 
+    //转移到后端
     //检测两个点的连通性
-    check_connectivity(g, sx, sy, tx, ty) {
+    /*check_connectivity(g, sx, sy, tx, ty) {
         if (sx === tx && sy === ty) return true;
         g[sx][sy] = true;
 
@@ -39,11 +41,12 @@ export class GameMap extends AcGameObject{
         }
 
         return false;
-    }
+    }*/
 
 
+    //逻辑转移到后端
     create_walls(){
-        const g = [];
+        /*const g = [];
         //有无墙，初始全无
         for (let r = 0; r < this.rows; r ++ ) {
             g[r] = [];
@@ -78,7 +81,8 @@ export class GameMap extends AcGameObject{
         const copy_g = JSON.parse(JSON.stringify(g));
         //检测连通性
         if (!this.check_connectivity(copy_g, this.rows - 2, 1, 1, this.cols - 2))
-            return false;
+            return false;*/
+        const g = this.store.state.pk.gamemap;
 
 
         for (let i = 0; i < this.rows; i++) {
@@ -89,8 +93,8 @@ export class GameMap extends AcGameObject{
             }
 
         }
-
-        return true;
+/*
+        return true;*/
 
 
     }
@@ -115,9 +119,10 @@ export class GameMap extends AcGameObject{
     }
 
     start() {
-        for (let i = 0; i < 1000; i ++ )
+        /*for (let i = 0; i < 1000; i ++ )
             if (this.create_walls())
-                break;
+                break;*/
+        this.create_walls();
 
         this.add_listening_events();
 
