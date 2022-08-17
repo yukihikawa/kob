@@ -1,17 +1,22 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col-3"><!--左边，三份-->
-        <div class="card" style="margin-top: 20px;">
+<!--      bootstrap 一行分为12份-->
+      <!--左边，三份-->
+      <div class="col-3">
+        <div class="card" style="margin-top: 20px;"> <!--卡片，上边距-->
           <div class="card-body">
             <img :src="$store.state.user.photo" alt="" style="width: 100%;">
           </div>
         </div>
       </div>
+<!--      右边，9份-->
       <div class="col-9">
         <div class="card" style="margin-top: 20px;">
+
+<!--          卡片标题-->
           <div class="card-header">
-            <span style="font-size: 130%">我的Bot</span>
+            <span style="font-size: 130%">我的Bot</span> <!--span文本样式-->
             <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-bot-btn">
               创建Bot
             </button>
@@ -51,8 +56,13 @@
               </div>
             </div>
           </div>
+
+<!--          卡片内容-->
           <div class="card-body">
+            <!--表格样式-->
             <table class="table table-striped table-hover">
+
+<!--              表头-->
               <thead>
               <tr>
                 <th>名称</th>
@@ -60,21 +70,28 @@
                 <th>操作</th>
               </tr>
               </thead>
+
+
               <tbody>
+<!--              vue的循环-->
               <tr v-for="bot in bots" :key="bot.id">
                 <td>{{ bot.title }}</td>
                 <td>{{ bot.createtime }}</td>
                 <td>
+<!--                  修改按钮-->
                   <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-bot-modal-' + bot.id">修改</button>
                   <button type="button" class="btn btn-danger" @click="remove_bot(bot)">删除</button>
 
+                  <!--修改浮窗，每个修改按钮都对应一个-->
                   <div class="modal fade" :id="'update-bot-modal-' + bot.id" tabindex="-1">
                     <div class="modal-dialog modal-xl">
                       <div class="modal-content">
+                        <!--浮窗标题-->
                         <div class="modal-header">
                           <h5 class="modal-title">创建Bot</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        <!--窗体-->
                         <div class="modal-body">
                           <div class="mb-3">
                             <label for="add-bot-title" class="form-label">名称</label>
@@ -114,7 +131,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive } from 'vue' /*绑定变量ref，绑定对象reactive*/
 import $ from 'jquery'
 import { useStore } from 'vuex'
 import { Modal } from 'bootstrap/dist/js/bootstrap'
@@ -126,6 +143,7 @@ export default {
     VAceEditor
   },
   setup() {
+    /*ace编辑器配置*/
     ace.config.set(
         "basePath",
         "https://cdn.jsdelivr.net/npm/ace-builds@" + require('ace-builds').version + "/src-noconflict/")
@@ -133,6 +151,7 @@ export default {
     const store = useStore();
     let bots = ref([]);
 
+    /*在输入区的v-model绑定*/
     const botadd = reactive({
       title: "",
       description: "",
@@ -140,6 +159,7 @@ export default {
       error_message: "",
     });
 
+    /*调用后端获取列表*/
     const refresh_bots = () => {
       $.ajax({
         url: "http://127.0.0.1:3000/user/bot/getlist/",
@@ -153,9 +173,11 @@ export default {
       })
     }
 
+    /*执行*/
     refresh_bots();
 
     const add_bot = () => {
+      /*清空报错信息*/
       botadd.error_message = "";
       $.ajax({
         url: "http://127.0.0.1:3000/user/bot/add/",
@@ -170,9 +192,11 @@ export default {
         },
         success(resp) {
           if (resp.error_message === "success") {
+            //先清空
             botadd.title = "";
             botadd.description = "";
             botadd.content = "";
+            //关闭窗口,modal API
             Modal.getInstance("#add-bot-btn").hide();
             refresh_bots();
           } else {
@@ -181,6 +205,7 @@ export default {
         }
       })
     }
+
 
     const update_bot = (bot) => {
       botadd.error_message = "";
@@ -207,6 +232,7 @@ export default {
       })
     }
 
+    /*删除*/
     const remove_bot = (bot) => {
       $.ajax({
         url: "http://127.0.0.1:3000/user/bot/remove/",

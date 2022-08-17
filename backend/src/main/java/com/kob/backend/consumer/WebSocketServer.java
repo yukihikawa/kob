@@ -5,6 +5,7 @@ import com.kob.backend.consumer.utils.Game;
 import com.kob.backend.consumer.utils.JwtAuthentication;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -25,30 +26,45 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint("/websocket/{token}")
 public class WebSocketServer {
+    //每次有链接时new一个该类的实例
 
+    //存储所有连接，全局变量
     final private static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();
+
+    /*匹配池,线程安全的集合*/
     final private static CopyOnWriteArraySet<User> matchPool = new CopyOnWriteArraySet<>();
     private User user;
-    private Session session = null;
+    private Session session = null;  //用于从后端向前端发送
+    private static UserMapper userMapper;  //数据库
 
-    private final UserMapper userMapper;
-
-    public WebSocketServer(UserMapper userMapper) {
+    //本类不是单例，需要特殊注入
+    /*public WebSocketServer(UserMapper userMapper) {
         this.userMapper = userMapper;
+    }*/
+
+    @Autowired
+    public void setUserMapper(UserMapper userMapper) {
+        WebSocketServer.userMapper = userMapper;
     }
+
 
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
+
         this.session = session;
         System.out.println("Connected!");
-        Integer userId = JwtAuthentication.getUserId(token);//从token中获取用户
-        this.user = userMapper.selectById(userId);
+        /*Integer userId = Integer.parseInt(token);*/
+        Integer userId = JwtAuthentication.getUserId(token);//从token中获取用户,通过jwt验证
+
+
+        this.user = userMapper.selectById(userId); //尝试解析
+
 
         if(user != null){
             users.put(userId, this);
         }else {
-            this.session.close();;
+            this.session.close();
         }
 
         System.out.println(user);
@@ -68,7 +84,7 @@ public class WebSocketServer {
         System.out.println("Start matching！");
         matchPool.add(this.user); //加入匹配池
 
-        while(matchPool.size() >= 2){
+        while(matchPool.size() >= 2){  /*任意两个配对*/
             Iterator<User> it = matchPool.iterator();
             User a = it.next(), b = it.next();
             matchPool.remove(a);
@@ -82,14 +98,14 @@ public class WebSocketServer {
             respA.put("opponent_username", b.getUsername());
             respA.put("opponent_photo", b.getPhoto());
             respA.put("gamemap",game.getG());
-            users.get(a.getId()).sendMessage(respA.toJSONString());
+            users.get(a.getId()).sendMessage(respA.toJSONString()); /*获取连接,送往前端*/
 
             JSONObject respB = new JSONObject();
             respB.put("event", "start-matching");
             respB.put("opponent_username", a.getUsername());
             respB.put("opponent_photo", a.getPhoto());
             respB.put("gamemap",game.getG());
-            users.get(a.getId()).sendMessage(respB.toJSONString());
+            users.get(b.getId()).sendMessage(respB.toJSONString());
 
         }
     }
@@ -100,10 +116,12 @@ public class WebSocketServer {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session){
+    public void onMessage(String message, Session session){  /*本质是一个路由,判断将任务交给谁*/
         //从Client接收消息
         System.out.println("receive message!");
+        /*解析前端请求*/
         JSONObject data = JSONObject.parseObject(message);
+        /*取出event*/
         String evevt = data.getString("event");
         if("start-matching".equals(evevt)){
             startMatching();
