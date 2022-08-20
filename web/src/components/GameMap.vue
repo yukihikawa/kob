@@ -1,12 +1,7 @@
 <template>
-  <div ref="parent" class="gamemap">
-<!--ref关联-->
-<!--    canvas画布，绘制2D图形-->
-    <canvas ref="canvas" tabindex="0">
-
-    </canvas>
-  </div>
-
+    <div ref="parent" class="gamemap">
+        <canvas ref="canvas" tabindex="0"></canvas>
+    </div>
 </template>
 
 <script>
@@ -15,36 +10,32 @@ import { ref, onMounted } from 'vue'
 import { useStore } from "vuex";
 
 export default {
-  setup() {
-    const store = useStore();
-    let parent = ref(null);
-    let canvas = ref(null);
-    //一开始没指向任何元素
+    setup() {
+        const store = useStore();
+        let parent = ref(null);
+        let canvas = ref(null);
 
-    //挂载函数，组件挂载完后执行的操作，创建GameMap
-    onMounted(() => {
-      new GameMap(canvas.value.getContext('2d'), parent.value, store)
-    });
+        onMounted(() => {
+            store.commit(
+                "updateGameObject",
+                new GameMap(canvas.value.getContext('2d'), parent.value, store)
+            );
+        });
 
-    return {
-      parent,
-      canvas //返回后可以建立关联
+        return {
+            parent,
+            canvas
+        }
     }
-  }
-
 }
 </script>
 
 <style scoped>
 div.gamemap {
-  width: 100%;
-  height: 100%;
-  display: flex;
-
-  /*居中*/
-  justify-content: center;
-  align-items: center;
-
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
 </style>
