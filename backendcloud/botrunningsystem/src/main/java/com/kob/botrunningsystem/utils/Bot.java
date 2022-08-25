@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @program: backendcloud
- * @description: bot行为
+ * @description: bot,以后要传给后端执行
  * @author: WRF
  * @create: 2022-08-22 22:33
  **/
@@ -26,7 +26,7 @@ public class Bot implements com.kob.botrunningsystem.utils.BotInterface{
     }
 
     public List<Cell> getCells(int sx, int sy, String steps){
-        steps = steps.substring(1, steps.length() - 1);
+        steps = steps.substring(1, steps.length() - 1); //去掉编码的括号
 
         List<Cell> res = new ArrayList<>();
 

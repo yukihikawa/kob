@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /**
  * @program: backendcloud
- * @description:
+ * @description: java代码任务的执行器,每段代码单独一个线程
  * @author: WRF
  * @create: 2022-08-22 22:12
  **/
@@ -29,21 +29,26 @@ public class Consumer extends Thread{
     }
 
 
-    public void startTimeOut(long timeOut, Bot bot){
+    public void startTimeOut(long timeOut, Bot bot){ //传入超时时间
         this.bot = bot;
         this.start();
 
         try {
-            this.join(timeOut);
+            this.join(timeOut); //等待时间
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
             {
-                this.interrupt();
+                this.interrupt(); //超时中断线程
             }
         }
     }
 
+    /**添加UID防止重名
+     * @param code
+     * @param uid
+     * @return
+     */
     private String addUid(String code, String uid){
         int k = code.indexOf(" implements com.kob.botrunningsystem.utils.BotInterface");
         return code.substring(0, k) + uid + code.substring(k);
@@ -58,6 +63,8 @@ public class Consumer extends Thread{
                 "com.kob.botrunningsystem.utils.Bot" + uid,
                 addUid(bot.getBotCode(), uid)
         ).create().get();
+
+        //动态编译,调用结果
 
         Integer direction = botInterface.nextMove(bot.getInput());
         System.out.println("move-direction: " + bot.getUserId() + " " + direction);

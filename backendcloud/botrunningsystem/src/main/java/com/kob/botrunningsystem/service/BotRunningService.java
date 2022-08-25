@@ -6,6 +6,6 @@ package com.kob.botrunningsystem.service;
  * @author: WRF
  * @create: 2022-08-22 19:52
  **/
-public interface BotRunningService {
+public interface  BotRunningService {
     String addBot(Integer userId, String botCode, String input);
 }

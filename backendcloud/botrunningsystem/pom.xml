@@ -47,6 +47,7 @@
             <scope>provided</scope>
         </dependency>-->
 
+        <!--用于运行时动态编译java代码-->
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joor-java-8</artifactId>

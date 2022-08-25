@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @program: backendcloud
- * @description:
+ * @description: 辅助类
  * @author: WRF
  * @create: 2022-08-22 19:55
  **/

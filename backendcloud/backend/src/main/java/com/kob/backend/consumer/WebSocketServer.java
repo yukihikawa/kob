@@ -35,7 +35,7 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
     final public static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>(); //存储所有连接，全局变量
     private User user;
     private Session session = null;  //用于从后端向前端发送
-    private static UserMapper userMapper;  //数据库
+    public static UserMapper userMapper;  //数据库
     public static RecordMapper recordMapper;
     public static BotMapper botMapper;
     public static RestTemplate restTemplate;
@@ -60,7 +60,6 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
     public void setRestTemplate(RestTemplate restTemplate) {
         WebSocketServer.restTemplate = restTemplate;
     }
-
 
 
 
@@ -91,6 +90,38 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
         System.out.println("disconnected!");
         if(this.user != null){
             users.remove(this.user.getId());
+        }
+    }
+
+    @OnMessage
+    public void onMessage(String message, Session session){  /*本质是一个路由,判断将任务交给谁*/
+        //从Client接收消息
+        System.out.println("receive message!");
+        /*解析前端请求*/
+        JSONObject data = JSONObject.parseObject(message);
+        /*取出event*/
+        String event = data.getString("event");
+        if("start-matching".equals(event)){
+            startMatching(data.getInteger("bot_id"));
+        } else if ("stop-matching".equals(event)){
+            stopMatching();
+        } else if ("move".equals(event)) {
+            move(data.getInteger("direction"));
+        }
+    }
+
+    @OnError
+    public void onError(Session session, Throwable error){
+        error.printStackTrace();
+    }
+
+    public void sendMessage(String message){
+        synchronized (this.session) {
+            try{
+                this.session.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -142,6 +173,9 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
             users.get(b.getId()).sendMessage(respB.toJSONString());
     }
 
+
+
+    /*以下为OnMessage分配的任务*/
     private void startMatching(Integer botId){
         System.out.println("Start matching！");
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
@@ -159,8 +193,9 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
     }
 
     private void move(int direction){
+        System.out.println("move " + direction);
         if(game.getPlayerA().getId().equals(user.getId())){
-            if(game.getPlayerA().getBotId().equals(-1)) { //玩家操作,不使用bot
+            if(game.getPlayerA().getBotId().equals(-1)) { //玩家操作,不使用bot,否则不接受输入
                 game.setNextStepA(direction);
             }
         } else if (game.getPlayerB().getId().equals(user.getId())) {
@@ -170,35 +205,5 @@ public class WebSocketServer { //每次有链接时new一个该类的实例
         }
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session){  /*本质是一个路由,判断将任务交给谁*/
-        //从Client接收消息
-        System.out.println("receive message!");
-        /*解析前端请求*/
-        JSONObject data = JSONObject.parseObject(message);
-        /*取出event*/
-        String event = data.getString("event");
-        if("start-matching".equals(event)){
-            startMatching(data.getInteger("bot_id"));
-        } else if ("stop-matching".equals(event)){
-            stopMatching();
-        } else if ("move".equals(event)) {
-            move(data.getInteger("direction"));
-        }
-    }
 
-    @OnError
-    public void onError(Session session, Throwable error){
-        error.printStackTrace();
-    }
-
-    public void sendMessage(String message){
-        synchronized (this.session) {
-            try{
-                this.session.getBasicRemote().sendText(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

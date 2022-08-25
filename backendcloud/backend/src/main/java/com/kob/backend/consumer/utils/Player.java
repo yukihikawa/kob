@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Player {
     private Integer id;
-    private Integer botId;
+    private Integer botId; //-1表示人工操作
     private String botCode;
     private Integer sx;
     private Integer sy;

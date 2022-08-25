@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/user/account/token/", "/user/account/register/", "/user/account/login/").permitAll() //放行
-                .antMatchers("/pk/start/game/", "pk/receive/bot/move/").hasIpAddress("127.0.0.1")
+                .antMatchers("/pk/start/game/", "/pk/receive/bot/move/").hasIpAddress("127.0.0.1")
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()

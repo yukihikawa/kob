@@ -42,7 +42,7 @@
                       <VAceEditor
                           v-model:value="botadd.content"
                           @init="editorInit"
-                          lang="c_cpp"
+                          lang="java"
                           theme="textmate"
                           style="height: 300px" />
                     </div>
@@ -106,7 +106,7 @@
                             <VAceEditor
                                 v-model:value="bot.content"
                                 @init="editorInit"
-                                lang="c_cpp"
+                                lang="java"
                                 theme="textmate"
                                 style="height: 300px" />
                           </div>

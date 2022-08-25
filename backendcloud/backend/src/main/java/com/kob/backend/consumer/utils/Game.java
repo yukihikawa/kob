@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
+import com.kob.backend.pojo.User;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -50,6 +51,7 @@ public class Game extends Thread{
 
         Integer botIdA = -1, botIdB = -1;
         String botCodeA = "", botCodeB = "";
+        //判断不空再赋值
         if(botA != null){
             botIdA = botA.getId();
             botCodeA = botA.getContent();
@@ -166,7 +168,7 @@ public class Game extends Thread{
         }
     }
 
-    /**将当前信息编码为字符串
+    /**将当前局面信息编码为字符串
      * @param player
      * @return
      */
@@ -184,14 +186,18 @@ public class Game extends Thread{
         return getMapString() + "#" +
                 me.getSx() + "#" +
                 me.getSy() + "#(" +
-                me.getStepsString() + ")#" +
+                me.getStepsString() + ")#" + //操作序列
                 you.getSx() + "#" +
                 you.getSy() + "#(" +
                 you.getStepsString() + ")";
     }
 
+
+    /**判断是否需要执行bot代码
+     * @param player
+     */
     private void sendBotCode(Player player){
-        if(player.getBotId().equals(-1))
+        if(player.getBotId().equals(-1)) //是真人,不需要
             return;
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", player.getId().toString());
@@ -293,7 +299,6 @@ public class Game extends Thread{
             WebSocketServer.users.get(playerB.getId()).sendMessage(message);
     }
 
-
     /**
      * 向两个Client传递移动信息
      */
@@ -325,10 +330,34 @@ public class Game extends Thread{
         return res.toString();
     }
 
+    /**更新用户分数
+     * @param player
+     * @param rating
+     */
+    private void updateUserRating(Player player, Integer rating) {
+        User user = WebSocketServer.userMapper.selectById(player.getId());
+        user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
     /**
-     * 对局信息存储到数据库
+     * 对局信息与分数变化存储到数据库
      */
     private void saveToDatabase(){
+        Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
+
+        if ("A".equals(loser)) {
+            ratingA -= 2;
+            ratingB += 5;
+        }else if("B".equals(loser)){
+            ratingA += 5;
+            ratingB -= 2;
+        }
+
+        updateUserRating(playerA, ratingA);
+        updateUserRating(playerB, ratingB);
+
         Record record = new Record(
                 null,
                 playerA.getId(),
